@@ -1,0 +1,48 @@
+# references from:
+# - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+# - https://germaniumhq.com/2019/02/14/2019-02-14-Disabling-Swap-for-Kubernetes-in-an-Ansible-Playbook/
+
+- name: install kubeadm
+  hosts: all
+  tasks:
+    - name: update and install packages
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+    - name: install kubeadm repo gpg key
+      become: yes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+        state: present
+    - name: add kubeadm repo
+      become: yes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+    - name: install kubeadm
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - kubelet
+        - kubeadm
+        - kubectl
+    - name: Disable SWAP since kubernetes can't work with swap enabled (1/2)
+      become: yes
+      shell: |
+        swapoff -a
+    - name: Disable SWAP in fstab since kubernetes can't work with swap enabled (2/2)
+      become: yes
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
