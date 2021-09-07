@@ -1,0 +1,17 @@
+- name: Install k8s env
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: su
+  tasks:
+    # Install docker
+    - name: Install docker
+      include_tasks: docker.yaml
+
+    # Install kubeadm
+    - name: Install kubeadm
+      include_tasks: kubeadm.yaml
+
+    # Install master
+    - name: Install leader
+      include_tasks: k8s-leader.yaml
