@@ -1,7 +1,10 @@
-# untaint master node
-# if run "kubectl taint nodes --all node-role.kubernetes.io/master-"
-untaint_leader: true
+# ubuntu version for package installation
+ubuntu_version: bionic
 
 # network setup
 service_cidr: 192.168.0.0/24
 pod_network_cidr: 10.10.0.0/16
+
+# if untaint master node after k8s installation
+# if run "kubectl taint nodes --all node-role.kubernetes.io/master-"
+untaint_leader: true

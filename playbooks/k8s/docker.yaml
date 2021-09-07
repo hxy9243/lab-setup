@@ -5,9 +5,8 @@
 - name: install docker and setup docker env
   hosts: all
   become: yes
-  vars:
-    # bionic for ubuntu 20.04
-    ubuntu_version: bionic
+  become_user: root
+  become_method: sudo
   tasks:
     - name: install aptitude using apt
       apt: name={{ item }} state=latest update_cache=yes
@@ -29,9 +28,9 @@
       pip:
         name: docker
     - name: install docker
-      apt: 
-        update_cache: yes 
-        state: latest        
+      apt:
+        update_cache: yes
+        state: latest
         name:
           - docker-ce
           - docker-ce-cli
