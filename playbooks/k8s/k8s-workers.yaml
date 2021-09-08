@@ -29,7 +29,7 @@
     - debug:
         msg: "Deploying worker {{ hostvars['leader_host']['worker_join_command'] }}"
     - name: Join command
-      shell: "{{ worker_join_command.stdout }}"
+      shell: "{{ hostvars['leader_host']['worker_join_command'] }}"
       register: worker_join
     - debug:
         msg: "{{ worker_join.stdout }}"
