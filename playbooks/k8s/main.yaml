@@ -9,3 +9,7 @@
 # Install k8s leader
 - name: Install leader
   import_playbook: k8s-leader.yaml
+
+# Install k8s workers
+- name: Install workers
+  import_playbook: k8s-workers.yaml
