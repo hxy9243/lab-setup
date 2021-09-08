@@ -1,11 +1,30 @@
 # References from https://github.com/kairen/kubeadm-ansible/
 # systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 
-- name: Reset k8s cluster and prepare env
-  hosts: "{{ groups['all'].0 }}"
+# A hack to fix containerd
+# https://github.com/containerd/containerd/issues/4581#issuecomment-733704174
+- name: A hack to fix containerd as runtime
   become: yes
   become_user: root
   become_method: sudo
+  hosts: k8s_leader
+  tasks:
+    - name: Remove containerd default config file
+      file:
+        path: /etc/containerd/config.toml
+        state: absent
+    - name: Restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+
+- name: Prepare k8s env
+  become: yes
+  become_user: root
+  become_method: sudo
+  hosts: all
+  tags:
+    - reset
   tasks:
     - name: Reset k8s component
       shell: kubeadm reset --force
@@ -19,36 +38,30 @@
         regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
         replace: '# \1'
 
-# https://github.com/containerd/containerd/issues/4581#issuecomment-733704174
-- name: A hack to fix containerd as runtime
-  become: yes
-  become_user: root
-  become_method: sudo
-  hosts: "{{ groups['all'].0 }}"
-  tasks:
-    - name: Remove containerd default config file
-      file:
-        path: /etc/containerd/config.toml
-        state: absent
-    - name: Restart containerd
-      systemd:
-        name: containerd
-        state: restarted
-
 - name: Install k8s leader
   become: yes
   become_user: root
   become_method: sudo
-  hosts: "{{ groups['all'].0 }}"
+  hosts: k8s_leader
+  tags:
+    - k8s_leader
   tasks:
+    - debug:
+        msg: "Deploying leader to {{ kubeadm_leader_advertise_address }}"
     - name: Install kube leader node on first node
-      when: reset_cluster is succeeded
-      shell: |
+      command: |
         kubeadm init \
           --service-cidr {{ service_cidr }} \
           --pod-network-cidr {{ pod_network_cidr }} \
-          --cri-socket /run/containerd/containerd.sock
+          --cri-socket /run/containerd/containerd.sock \
+          --apiserver-advertise-address {{ kubeadm_leader_advertise_address }} \
+          {{ kubeadm_extra_flags }}
       register: init_cluster
+    - name: Sleep for 20 seconds to wait for admin come up
+      wait_for:
+        timeout: 20
+    - debug:
+        msg: "{{ init_cluster.stdout }}"
     - name: Create home dir
       when: init_cluster is succeeded
       file:
@@ -66,9 +79,13 @@
         group: "{{ ansible_user | default(ansible_user_id) }}"
         mode: 0755
         remote_src: true
-    - name: Deploy k8s network
+    - name: Deploy k8s network with kube-router
+      environment:
+        - KUBECONFIG: /etc/kubernetes/admin.conf
       shell: |
         kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
     - name: Untaint leader node
+      environment:
+        - KUBECONFIG: /etc/kubernetes/admin.conf
       when: untaint_leader
       shell: kubectl taint nodes --all node-role.kubernetes.io/master-

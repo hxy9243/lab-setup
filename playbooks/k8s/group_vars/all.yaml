@@ -8,3 +8,10 @@ pod_network_cidr: 10.10.0.0/16
 # if untaint master node after k8s installation
 # if run "kubectl taint nodes --all node-role.kubernetes.io/master-"
 untaint_leader: true
+
+# kubeadm parameters
+# The advertise address of the leader
+kubeadm_leader_advertise_address: "{{ groups['k8s_leader'].0 }}"
+
+# Extra flags to pass in to kubeadm init
+kubeadm_extra_flags:
