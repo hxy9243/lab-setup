@@ -1,44 +1,8 @@
 # References from https://github.com/kairen/kubeadm-ansible/
 # systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 
-# A hack to fix containerd
-# https://github.com/containerd/containerd/issues/4581#issuecomment-733704174
-- name: A hack to fix containerd as runtime
-  become: yes
-  become_user: root
-  become_method: sudo
-  hosts: all
-  tags:
-    - containerd
-  tasks:
-    - name: Remove containerd default config file
-      file:
-        path: /etc/containerd/config.toml
-        state: absent
-    - name: Restart containerd
-      systemd:
-        name: containerd
-        state: restarted
-
-- name: Prepare k8s env
-  become: yes
-  become_user: root
-  become_method: sudo
-  hosts: all
-  tags:
-    - reset
-  tasks:
-    - name: Reset k8s component
-      shell: kubeadm reset --force
-      register: reset_cluster
-    - name: Disable SWAP since kubernetes can't work with swap enabled (1/2)
-      shell: |
-        swapoff -a
-    - name: Disable SWAP in fstab since kubernetes can't work with swap enabled (2/2)
-      replace:
-        path: /etc/fstab
-        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-        replace: '# \1'
+- name: K8s env setup
+  import_playbook: k8s-common.yaml
 
 - name: Install k8s leader
   become: yes
@@ -50,12 +14,15 @@
   tasks:
     - debug:
         msg: "Deploying leader to {{ kubeadm_leader_advertise_address }}"
+    - name: Reset k8s component
+      when: reset_current
+      shell: kubeadm reset --force
     - name: Install kube leader node on first node
       command: |
         kubeadm init \
           --service-cidr {{ service_cidr }} \
           --pod-network-cidr {{ pod_network_cidr }} \
-          --cri-socket /run/containerd/containerd.sock \
+          {{ --cri-socket /run/containerd/containerd.sock if (use_containerd) }} \
           --apiserver-advertise-address {{ kubeadm_leader_advertise_address }} \
           {{ kubeadm_extra_flags }}
       register: init_cluster

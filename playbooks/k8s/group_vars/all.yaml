@@ -1,5 +1,6 @@
 # ubuntu version for package installation
-ubuntu_version: bionic
+# focal for 20.04
+ubuntu_version: focal
 
 # network setup
 service_cidr: 192.168.0.0/24
@@ -8,6 +9,12 @@ pod_network_cidr: 10.10.0.0/16
 # if untaint master node after k8s installation
 # if run "kubectl taint nodes --all node-role.kubernetes.io/master-"
 untaint_leader: true
+
+# Use containerd
+use_containerd: false
+
+# reset current k8s installation
+reset_current: false
 
 # kubeadm parameters
 # The advertise address of the leader

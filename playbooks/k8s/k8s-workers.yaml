@@ -1,3 +1,6 @@
+- name: K8s env setup
+  import_playbook: k8s-common.yaml
+
 - name: Get install command
   become: yes
   become_user: root
@@ -24,6 +27,9 @@
   tags:
     - k8s_workers
   tasks:
+    - name: Reset k8s component
+      when: reset_current
+      shell: kubeadm reset --force
     - debug:
         msg: "Deploying worker {{ inventory_hostname }} to join leader {{ kubeadm_leader_advertise_address }}"
     - debug:
@@ -31,7 +37,8 @@
     - name: Join command
       shell: |
         {{ hostvars['leader_host']['worker_join_command'] }} \
-          --cri-socket /run/containerd/containerd.sock
+        {{ --cri-socket /run/containerd/containerd.sock if (use_containerd) }} \
+        {{ kubeadm_extra_flags }}
       register: worker_join
     - debug:
         msg: "{{ worker_join.stdout }}"
