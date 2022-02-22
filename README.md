@@ -28,7 +28,7 @@ cluster in the hosts described in `hosts` files.
 
 # Contents
 
-- [vagrant](vagant/) Example for setting up a small cluster with Vagrant.
+- [vagrant](vagrant/) Example for setting up a small cluster with Vagrant.
 
 - [playbook/k8s](playbooks/k8s/): Install docker, preconfigure hosts, and install k8s
   on all the hosts (including leader and followers).
