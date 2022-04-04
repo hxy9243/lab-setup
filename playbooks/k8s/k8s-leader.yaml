@@ -22,7 +22,7 @@
         kubeadm init \
           --service-cidr {{ service_cidr }} \
           --pod-network-cidr {{ pod_network_cidr }} \
-          {{ --cri-socket /run/containerd/containerd.sock if (use_containerd) }} \
+           {{ "--cri-socket /run/containerd/containerd.sock" if (use_containerd) }} \
           --apiserver-advertise-address {{ kubeadm_leader_advertise_address }} \
           {{ kubeadm_extra_flags }}
       register: init_cluster

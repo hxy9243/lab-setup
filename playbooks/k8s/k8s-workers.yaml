@@ -37,7 +37,7 @@
     - name: Join command
       shell: |
         {{ hostvars['leader_host']['worker_join_command'] }} \
-        {{ --cri-socket /run/containerd/containerd.sock if (use_containerd) }} \
+        {{ "--cri-socket /run/containerd/containerd.sock" if (use_containerd) }} \
         {{ kubeadm_extra_flags }}
       register: worker_join
     - debug:

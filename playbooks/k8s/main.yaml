@@ -4,7 +4,7 @@
 
 # Install kubeadm
 - name: Install kubeadm
-  import_playbook: kubeadm.yaml
+  import_playbook: k8s-common.yaml
 
 # Install k8s leader
 - name: Install leader
