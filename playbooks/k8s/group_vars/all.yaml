@@ -11,10 +11,10 @@ pod_network_cidr: 10.10.0.0/16
 untaint_leader: true
 
 # Use containerd
-use_containerd: false
+use_containerd: true
 
 # reset current k8s installation
-reset_current: false
+reset_current: true
 
 # kubeadm parameters
 # The advertise address of the leader
