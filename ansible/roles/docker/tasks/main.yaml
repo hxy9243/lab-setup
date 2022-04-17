@@ -1,0 +1,6 @@
+- name: test if docker is already installed
+  command: docker --version
+  register: docker_installed
+
+- include: install.yaml
+  when: "{{ not docker_installed }}"
