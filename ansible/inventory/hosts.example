@@ -1,0 +1,26 @@
+[all]
+lab1 ansible_ssh_host=192.168.0.110
+lab2 ansible_ssh_host=192.168.0.116
+
+[all:vars]
+ansible_become=yes
+ansible_user=kevin
+ansible_become_password=my_awesome_password
+
+[docker]
+lab1
+lab2
+
+[k8s]
+lab1
+lab2
+
+[k8s_leader]
+lab1
+
+[k8s_workers]
+lab2
+
+[cuda]
+lab1
+lab2
