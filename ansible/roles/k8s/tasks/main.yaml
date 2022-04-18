@@ -1,6 +1,0 @@
-- name: Install docker
-  include_role:
-    name: docker
-- include: k8s-common.yaml
-- include: k8s-leader.yaml
-- include: k8s-worker.yaml

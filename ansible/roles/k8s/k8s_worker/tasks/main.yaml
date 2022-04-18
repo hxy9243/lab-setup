@@ -1,14 +1,5 @@
-- name: Get join leader command
-  shell: kubeadm token create --print-join-command
-  register: worker_join_command
-- name: Save join command
-  set_fact:
-    cachable: true
-    worker_join_command: "{{ worker_join_command.stdout }}"
-- name: Save fact to host
-  add_host:
-    name: leader_host
-    worker_join_command: "{{ worker_join_command }}"
+- name: include variables
+  include_vars: ../../vars/main.yaml
 
 - name: Reset k8s component
   when: reset_current
@@ -17,11 +8,20 @@
     msg: "Deploying worker {{ inventory_hostname }} to join leader {{ kubeadm_leader_advertise_address }}"
 - debug:
     msg: "Deploying worker {{ hostvars['leader_host']['worker_join_command'] }}"
+
+- name: test if k8s is already installed
+  ansible.builtin.systemd:
+    name: kubelet
+  register: kubelet_state
+
+- set_fact: kubelet_up="{{ kubelet_state['status']['ActiveState'] == 'active' }}"
+
 - name: Join command
   shell: |
     {{ hostvars['leader_host']['worker_join_command'] }} \
     {{ "--cri-socket /run/containerd/containerd.sock" if (use_containerd) }} \
     {{ kubeadm_extra_flags }}
+  when: not kubelet_up
   register: worker_join
 - debug:
     msg: "{{ worker_join.stdout }}"

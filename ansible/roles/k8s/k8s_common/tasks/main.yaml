@@ -4,6 +4,13 @@
 # references from:
 # - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 # - https://germaniumhq.com/2019/02/14/2019-02-14-Disabling-Swap-for-Kubernetes-in-an-Ansible-Playbook/
+- name: install docker
+  include_role:
+    name: docker
+
+- name: include variables
+  include_vars: ../../vars/main.yaml
+
 - name: update and install packages
   apt:
     name: "{{ item }}"
@@ -38,7 +45,7 @@
   file:
     path: /etc/containerd/config.toml
     state: absent
-- name: Restart containerd
+- name: Start containerd
   when: use_containerd
   systemd:
     name: containerd

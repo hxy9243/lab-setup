@@ -1,3 +1,11 @@
 - hosts: k8s
   roles:
-    - k8s
+    - k8s/k8s_common
+
+- hosts: k8s_leader
+  roles:
+    - k8s/k8s_leader
+
+- hosts: k8s_worker
+  roles:
+    - k8s/k8s_worker
