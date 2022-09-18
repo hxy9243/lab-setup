@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ray-demo
+spec:
+  containers:
+  - name: python3
+    image: rayproject/ray:2.0.0-py310
+    ports:
+    - containerPort: 80
+    command: ['/bin/bash', '-c', '--']
+    args: ["while true; do sleep 30; done"]
