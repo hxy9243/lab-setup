@@ -11,14 +11,14 @@ pod_network_cidr: 10.10.0.0/16
 untaint_leader: true
 
 # Use containerd
-use_containerd: false
+use_containerd: true
 
 # reset current k8s installation
 reset_current: false
 
-# kubeadm parameters
-# The advertise address of the leader
-kubeadm_leader_advertise_address: "{{ groups['k8s_leader'].0 }}"
+# # kubeadm parameters
+# # The advertise address of the leader
+kubeadm_leader_advertise_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 
 # Extra flags to pass in to kubeadm init
 kubeadm_extra_flags:

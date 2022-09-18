@@ -1,0 +1,62 @@
+# References from https://github.com/kairen/kubeadm-ansible/
+# systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
+
+# references from:
+# - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+# - https://germaniumhq.com/2019/02/14/2019-02-14-Disabling-Swap-for-Kubernetes-in-an-Ansible-Playbook/
+- name: install docker
+  include_role:
+    name: docker
+
+- name: include variables
+  include_vars: ../../vars/main.yaml
+
+- name: update and install packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+- name: install kubeadm repo gpg key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+- name: add kubeadm repo
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+- name: install kubeadm and utilities
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+# A hack to fix containerd
+# https://github.com/containerd/containerd/issues/4581#issuecomment-733704174
+- name: Remove containerd default config file
+  when: use_containerd
+  file:
+    path: /etc/containerd/config.toml
+    state: absent
+- name: Start containerd
+  when: use_containerd
+  systemd:
+    name: containerd
+    state: restarted
+
+# Disable swap on linux machines
+- name: Disable SWAP since kubernetes can't work with swap enabled (1/2)
+  shell: |
+    swapoff -a
+- name: Disable SWAP in fstab since kubernetes can't work with swap enabled (2/2)
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'

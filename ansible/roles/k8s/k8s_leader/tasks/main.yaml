@@ -1,0 +1,72 @@
+# References from https://github.com/kairen/kubeadm-ansible/
+# systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
+- name: include variables
+  include_vars: ../../vars/main.yaml
+
+- debug:
+    msg: "Deploying leader to {{ kubeadm_leader_advertise_address }}"
+- name: Reset k8s component
+  when: reset_current
+  shell: kubeadm reset --force
+
+- name: test if k8s is already installed
+  ansible.builtin.systemd:
+    name: kubelet
+  register: kubelet_state
+
+- set_fact: kubelet_up="{{ kubelet_state['status']['ActiveState'] == 'active' }}"
+
+- name: install kube leader node on first node
+  command: |
+    kubeadm init \
+      --service-cidr {{ service_cidr }} \
+      --pod-network-cidr {{ pod_network_cidr }} \
+       {{ "--cri-socket /run/containerd/containerd.sock" if (use_containerd) }} \
+      --apiserver-advertise-address {{ kubeadm_leader_advertise_address }} \
+      {{ kubeadm_extra_flags }}
+  when: not kubelet_up
+  register: init_cluster
+- debug:
+    msg: "{{ init_cluster.stdout }}"
+  when: not kubelet_up
+- name: Create home dir
+  file:
+    path: ".kube"
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
+    mode: 0755
+    state: directory
+  when: not kubelet_up and init_cluster is succeeded
+
+- name: Copy k8s config to user
+  when: init_cluster is succeeded
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: ".kube/config"
+    owner: "{{ ansible_user | default(ansible_user_id) }}"
+    group: "{{ ansible_user | default(ansible_user_id) }}"
+    mode: 0755
+    remote_src: true
+- name: Deploy k8s network with kube-router
+  environment:
+    - KUBECONFIG: /etc/kubernetes/admin.conf
+  shell: |
+    kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
+- name: Untaint leader node
+  environment:
+    - KUBECONFIG: /etc/kubernetes/admin.conf
+  when: untaint_leader
+  shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+  ignore_errors: yes
+
+- name: Get join leader command
+  shell: kubeadm token create --print-join-command
+  register: worker_join_command
+- name: Save join command
+  set_fact:
+    cachable: true
+    worker_join_command: "{{ worker_join_command.stdout }}"
+- name: Save fact to host
+  add_host:
+    name: leader_host
+    worker_join_command: "{{ worker_join_command }}"

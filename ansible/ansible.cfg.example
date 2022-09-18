@@ -1,0 +1,3 @@
+[defaults]
+inventory          = /home/kevin/.ansible/hosts
+interpreter_python = /usr/bin/python3

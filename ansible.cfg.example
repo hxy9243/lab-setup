@@ -1,2 +1,0 @@
-[defaults]
-inventory       = /home/kevin/.ansible/hosts
