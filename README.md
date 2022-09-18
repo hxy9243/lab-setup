@@ -1,8 +1,8 @@
 Lab Setup Scripts
 ====
 
-These are my setup scripts for my home-lab environment. It's designed 
-for a small cluster of VMs/baremetal nodes running k8s.
+These are my setup scripts for my baremetal home-lab or cloud-based lab environment. It's designed
+for a small cluster of VMs/baremetal nodes running kubernetes.
 
 ## Ansible Setup
 
@@ -30,13 +30,22 @@ cluster in the hosts described in `hosts` files.
 
 - [vagrant](vagrant/) Example for setting up a small cluster with Vagrant.
 
-- [playbook/k8s](playbooks/k8s/): Install docker, preconfigure hosts, and install k8s
-  on all the hosts (including leader and followers).
+- [ansible](ansible/): Ansible files for configuring systems, including roles from:
 
-- [misc](playbooks/misc/): Misc tasks like:
+  - [ansible/roles/docker](ansible/roles/docker): Installing docker.
 
-  - Update packages.
-  - Install conda.
-  - Clean docker.
-  - etc.
+  - [ansible/roles/k8s](ansible/roles/k8s): Installing baremetal k8s.
 
+  - [ansible/roles/misc](ansible/roles/misc/): Misc tasks like:
+
+    - Update packages.
+    - Install conda.
+    - Clean docker.
+    - etc.
+
+- [kubernetes](kubernetes): Kubernetes helm and config files to install Pods/Services
+  in existing kubernetes cluster, including:
+
+  - [kubernetes/jupyter]: Installing Jupyter lab.
+
+  - [kubernetes/ray]: Installing Ray.
