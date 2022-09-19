@@ -1,16 +1,15 @@
 # example hosts config
 all:
     hosts:
-        192.168.0.151:
-        192.168.0.152:
-        192.168.0.153:
+        10.202.8.222:
     vars:
-        ansible_user: vagrant
+        ansible_user: huke
+        ansible_become_user: root
+        ansible_become_password: 'example_password'
     children:
         k8s_leader:
             hosts:
-                192.168.0.151:
+                10.202.8.222:
         k8s_workers:
             hosts:
-                192.168.0.152:   
-                192.168.0.153:    
+                10.202.8.212:
