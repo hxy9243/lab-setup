@@ -1,6 +1,6 @@
 [all]
-lab1 ansible_ssh_host=192.168.0.110
-lab2 ansible_ssh_host=192.168.0.116
+lab1 ansible_ssh_host=192.168.0.141
+lab2 ansible_ssh_host=192.168.0.142
 
 [all:vars]
 ansible_become=yes
@@ -18,7 +18,7 @@ lab2
 [k8s_leader]
 lab1
 
-[k8s_workers]
+[k8s_worker]
 lab2
 
 [cuda]

@@ -14,7 +14,7 @@ untaint_leader: true
 use_containerd: true
 
 # reset current k8s installation
-reset_current: false
+reset_current: true
 
 # # kubeadm parameters
 # # The advertise address of the leader
