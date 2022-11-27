@@ -1,0 +1,9 @@
+- name: Install PyYaml
+  ansible.builtin.pip:
+    name: pyyaml
+
+- name: Add helm repo for Jupyterhub
+  kubernetes.core.helm_repository:
+    name: jupyterhub
+    repo_url: https://jupyterhub.github.io/helm-chart/
+

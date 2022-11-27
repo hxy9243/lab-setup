@@ -1,0 +1,4 @@
+- name: Install Jupyterhub
+  hosts: localhost
+  roles:
+    - jupyterhub
