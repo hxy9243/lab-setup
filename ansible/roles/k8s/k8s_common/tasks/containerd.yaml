@@ -1,0 +1,46 @@
+# install containerd
+- name: install containerd
+  unarchive:
+    src: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/
+    remote_src: yes
+
+- name: download containerd service file
+  get_url:
+    url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+    dest: /lib/systemd/system/containerd.service
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: true
+    name: containerd
+    masked: false
+
+# install runc
+- name: install runc
+  when: use_containerd
+  get_url:
+    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.amd64"
+    dest: /usr/local/sbin/runc
+    mode: '0755'
+
+# setup containerd cgroups config
+# https://github.com/etcd-io/etcd/issues/13670
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+- name: Create containerd config directory
+  when: use_containerd
+  file:
+    path: /etc/containerd/
+    state: directory
+    mode: 0755
+- name: Configure containerd to use systemd
+  when: use_containerd
+  copy:
+    src: containerd-config.toml
+    dest: /etc/containerd/config.toml
+    mode: 0640
+- name: Restart containerd
+  when: use_containerd
+  systemd:
+    name: containerd
+    state: restarted
