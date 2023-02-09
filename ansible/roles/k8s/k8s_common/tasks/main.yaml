@@ -1,12 +1,8 @@
 # References from https://github.com/kairen/kubeadm-ansible/
-# systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
-
 # references from:
+# - systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 # - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 # - https://germaniumhq.com/2019/02/14/2019-02-14-Disabling-Swap-for-Kubernetes-in-an-Ansible-Playbook/
-- name: install docker
-  include_role:
-    name: docker
 
 - name: include variables
   include_vars: ../../vars/main.yaml
@@ -38,18 +34,10 @@
     - kubeadm
     - kubectl
 
-# A hack to fix containerd
-# https://github.com/containerd/containerd/issues/4581#issuecomment-733704174
-- name: Remove containerd default config file
+# install containerd runtime
+- name: install containerd
   when: use_containerd
-  file:
-    path: /etc/containerd/config.toml
-    state: absent
-- name: Start containerd
-  when: use_containerd
-  systemd:
-    name: containerd
-    state: restarted
+  include_tasks: ./containerd.yaml
 
 # Disable swap on linux machines
 - name: Disable SWAP since kubernetes can't work with swap enabled (1/2)
@@ -60,3 +48,25 @@
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
+
+# Load kernel module
+# Reference:
+# - https://stackoverflow.com/questions/55531834/kubeadm-fails-to-initialize-when-kubeadm-init-is-called
+# - https://www.nocentino.com/posts/2021-12-27-installing-and-configuring-containerd-as-a-kubernetes-container-runtime/
+- name: Load overlay module
+  modprobe:
+    name: overlay
+    state: present
+- name: Load bf_netfilter module
+  modprobe:
+    name: br_netfilter
+    state: present
+- name: Set Bridge call
+  shell:
+    cmd: echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+- name: Set bridge.bridge-nf-call-iptables
+  shell:
+    cmd: echo 1 > /proc/sys/net/ipv4/ip_forward
+- name: Update sysctl
+  shell:
+    cmd: sudo sysctl --system
