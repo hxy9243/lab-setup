@@ -1,13 +1,18 @@
 # ubuntu version for package installation
 # focal for 20.04
-ubuntu_version: focal
+# jammy for 22.04
+ubuntu_version: jammy
+
+containerd_version: 1.6.13
+
+runc_version: 1.1.4
 
 # network setup
-service_cidr: 192.168.0.0/24
+service_cidr: 10.202.8.0/24
 pod_network_cidr: 10.10.0.0/16
 
-# if untaint master node after k8s installation
-# if run "kubectl taint nodes --all node-role.kubernetes.io/master-"
+# if untaint master node after k8s installation so that user pods can be scheduled
+# if run "kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-"
 untaint_leader: true
 
 # Use containerd
@@ -16,8 +21,8 @@ use_containerd: true
 # reset current k8s installation
 reset_current: true
 
-# # kubeadm parameters
-# # The advertise address of the leader
+# kubeadm parameters
+# The advertise address of the leader
 kubeadm_leader_advertise_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 
 # Extra flags to pass in to kubeadm init

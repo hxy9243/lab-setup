@@ -21,7 +21,7 @@
     kubeadm init \
       --service-cidr {{ service_cidr }} \
       --pod-network-cidr {{ pod_network_cidr }} \
-       {{ "--cri-socket /run/containerd/containerd.sock" if (use_containerd) }} \
+       {{ "--cri-socket unix:///run/containerd/containerd.sock" if (use_containerd) }} \
       --apiserver-advertise-address {{ kubeadm_leader_advertise_address }} \
       {{ kubeadm_extra_flags }}
   when: not kubelet_up
@@ -49,16 +49,17 @@
     remote_src: true
 - name: Deploy k8s network with kube-router
   environment:
-    - KUBECONFIG: /etc/kubernetes/admin.conf
+    KUBECONFIG: "/etc/kubernetes/admin.conf"
   shell: |
     kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
+  retries: 6
+  delay: 10
 - name: Untaint leader node
   environment:
-    - KUBECONFIG: /etc/kubernetes/admin.conf
+    KUBECONFIG: "/etc/kubernetes/admin.conf"
   when: untaint_leader
-  shell: kubectl taint nodes --all node-role.kubernetes.io/master-
-  ignore_errors: yes
-
+  shell: kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+  ignore_errors: true
 - name: Get join leader command
   shell: kubeadm token create --print-join-command
   register: worker_join_command
