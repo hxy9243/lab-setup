@@ -1,0 +1,5 @@
+nfs_server_dirs:
+  - /data/nfs/general
+
+nfs_client_dirs:
+  - /data/remote

@@ -1,0 +1,3 @@
+{% for dir in nfs_server_dirs %}
+{{dir}} *(rw,sync,no_root_squash,no_subtree_check)
+{% endfor %}

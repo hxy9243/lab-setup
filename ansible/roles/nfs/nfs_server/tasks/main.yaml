@@ -1,0 +1,39 @@
+# With references from:
+# - https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04
+
+- name: include variables
+  include_vars: ../../vars/main.yaml
+
+- name: install nfs server
+  apt:
+    update_cache: yes
+    state: present
+    name: nfs-kernel-server
+
+- name: create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: nobody
+    group: nogroup
+  loop: "{{ nfs_server_dirs }}"
+
+- name: setup /etc/exports file
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    mode: 0644
+
+- name: update ulimit
+  pam_limits:
+    domain: root
+    limit_type: soft
+    limit_item: nofile
+    value: 100000
+    use_max: true
+
+- name: restart nfs server
+  systemd:
+    name: nfs-kernel-server
+    state: restarted
+    enabled: true
