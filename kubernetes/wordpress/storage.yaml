@@ -1,35 +1,19 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: local-storage
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
-
----
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-volume
   labels:
-    type: local
+    type: nfs
     app: mysql
 spec:
-  storageClassName: local-storage
   volumeMode: Filesystem
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: /data/k8s/mysql
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kevin-ideacentre-k410
+  nfs:
+    server: <server address>
+    path: /data/nfs/general/mysql
 
 ---
 apiVersion: v1
@@ -37,23 +21,14 @@ kind: PersistentVolume
 metadata:
   name: wordpress-static-volume
   labels:
-    type: local
+    type: nfs
     app: wordpress
 spec:
-  storageClassName: local-storage
   volumeMode: Filesystem
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: /data/k8s/wordpress
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kevin-ideacentre-k410
-   
+  nfs:
+    server: <server address>
+    path: /data/nfs/general/wordpress

@@ -20,7 +20,6 @@ metadata:
   labels:
     app: wordpress
 spec:
-  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -54,11 +53,17 @@ spec:
       - image: mysql:5.7
         name: mysql
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: adminuser
+        - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-pass
               key: password
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "yes"
         ports:
         - containerPort: 3306
           name: mysql
