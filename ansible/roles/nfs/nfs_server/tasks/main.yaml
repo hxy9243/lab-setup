@@ -14,6 +14,9 @@
   file:
     path: "{{ item }}"
     state: directory
+    group: nogroup
+    owner: nobody
+    mode: 0777
   loop: "{{ nfs_server_dirs }}"
 
 - name: setup /etc/exports file
