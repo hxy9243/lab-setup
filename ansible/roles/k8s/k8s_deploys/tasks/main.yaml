@@ -1,8 +1,8 @@
-- name: install nfs
-  include_tasks: nfs/nfs_server/tasks/main.yaml
+- name: include nfs variables
+  include_vars: ../../nfs/vars/main.yaml
 
 - name: include nfs variables
-  include_vars: nfs/vars/main.yaml
+  include_vars: ../../nfs/vars/main.yaml
 
 - name: Find if helm exists
   shell: helm
@@ -20,7 +20,9 @@
 
 - name: debug
   debug:
-    msg: nfs sever addr "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    msg:
+     - nfs sever addr "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+     - nfs server path "{{ nfs_server_dirs[0] }}/{{ nfs_k8s_subdir }}"
 
 - name: Install nfs storage provider
   kubernetes.core.helm:
