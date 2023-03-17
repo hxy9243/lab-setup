@@ -22,7 +22,7 @@
   debug:
     msg:
      - nfs sever addr "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-     - nfs server path "{{ nfs_server_dirs[0] }}/{{ nfs_k8s_subdir }}"
+     - nfs server path "{{ nfs_server_dirs[0] }}"
 
 - name: Install nfs storage provider
   kubernetes.core.helm:
@@ -35,4 +35,4 @@
       nfs:
         server: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']
  }}"
-        path: "{{ nfs_k8s_dir }}"
+        path: "{{ nfs_server_dirs[0] }}"
