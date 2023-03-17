@@ -1,0 +1,36 @@
+- name: install nfs
+  include_tasks: nfs/nfs_server/tasks/main.yaml
+
+- name: include nfs variables
+  include_vars: nfs/vars/main.yaml
+
+- name: Find if helm exists
+  shell: helm
+  register: helm
+
+- name: Install helm
+  when: helm.rc != 0
+  shell: |
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+- name: Add nfs storage provider repo
+  kubernetes.core.helm_repository:
+    name: nfs-subdir-external-provisioner
+    repo_url: "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
+
+- name: debug
+  debug:
+    msg: nfs sever addr "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+- name: Install nfs storage provider
+  kubernetes.core.helm:
+    kubeconfig: /etc/kubernetes/admin.conf
+    name: nfs-subdir-external-provisioner
+    chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+    release_namespace: nfs-provisioner
+    create_namespace: true
+    values:
+      nfs:
+        server: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+ }}"
+        path: "{{ nfs_k8s_dir }}"

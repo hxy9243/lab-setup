@@ -3,3 +3,4 @@ nfs_server_dirs:
 
 nfs_client_dirs:
   - /data/remote
+
