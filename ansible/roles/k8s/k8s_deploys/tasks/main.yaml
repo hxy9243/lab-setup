@@ -12,9 +12,9 @@
     msg: "{{k8s_deploy}}"
 
 - name: Deploy NFS and k8s storage provider
-  when: k8s_deploy.nfs
+  when: k8s_deploy.nfs.deploy
   include_tasks: nfs.yaml
 
 - name: Deploy CUDA operator
-  when: k8s_deploy.cuda_operator
+  when: k8s_deploy.cuda_operator.deploy
   include_tasks: cuda.yaml
