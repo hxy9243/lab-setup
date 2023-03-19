@@ -1,4 +1,3 @@
-
 - name: Find if helm exists
   shell: helm
   register: helm
@@ -8,5 +7,14 @@
   shell: |
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+- name: debug
+  debug:
+    msg: "{{k8s_deploy}}"
+
 - name: Deploy NFS and k8s storage provider
+  when: k8s_deploy.nfs
   include_tasks: nfs.yaml
+
+- name: Deploy CUDA operator
+  when: k8s_deploy.cuda_operator
+  include_tasks: cuda.yaml

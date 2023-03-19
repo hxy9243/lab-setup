@@ -1,9 +1,5 @@
 # With references from:
 # - https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04
-
-- name: include variables
-  include_vars: ../../vars/main.yaml
-
 - name: install nfs server
   apt:
     update_cache: yes

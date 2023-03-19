@@ -1,0 +1,13 @@
+# See more at: https://github.com/NVIDIA/gpu-operator
+
+- name: debug
+  debug:
+    msg: "Installing k8s cuda operator"
+
+# - name: Add cuda k8s operator repo
+#   kubernetes.core.helm_repository:
+#     name: nvidia
+#     repo_url: "https://helm.ngc.nvidia.com/nvidia"
+
+# - name: Add cuda
+#   kubernetes

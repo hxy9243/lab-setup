@@ -1,4 +1,14 @@
 - name: Install k8s management utilities
   hosts: k8s_leader
+  vars:
+    k8s_deploy:
+      nfs:
+        deploy: false
+        server_dirs:
+          - /data/nfs/general/
+        client_dirs:
+          - /data/remote/
+      cuda_operator:
+        deploy: true
   roles:
     - k8s/k8s_deploys

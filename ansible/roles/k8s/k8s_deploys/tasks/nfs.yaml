@@ -1,11 +1,12 @@
-- name: include nfs variables
-  include_vars: ../../nfs/vars/main.yaml
+# See more at: https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
 
 - name: Install nfs for k8s
   include_role:
     name: nfs/nfs_server
+  vars:
+    nfs_server_dirs: "{{ k8s_deploy.nfs.server_dirs }}"
+    nfs_client_dirs: "{{ k8s_deploy.nfs.client_dirs }}"
 
-# see more at: https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
 - name: Add nfs storage provider repo
   kubernetes.core.helm_repository:
     name: nfs-subdir-external-provisioner
@@ -15,7 +16,7 @@
   debug:
     msg:
      - nfs sever addr "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-     - nfs server path "{{ nfs_server_dirs[0] }}"
+     - nfs server path "{{ k8s_deploy.nfs.server_dirs[0] }}"
 
 - name: Install nfs storage provider
   kubernetes.core.helm:
@@ -28,4 +29,4 @@
       nfs:
         server: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']
  }}"
-        path: "{{ nfs_server_dirs[0] }}"
+        path: "{{ k8s_deploy.nfs.server_dirs[0] }}"
