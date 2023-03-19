@@ -3,10 +3,6 @@
 # - systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 # - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 # - https://germaniumhq.com/2019/02/14/2019-02-14-Disabling-Swap-for-Kubernetes-in-an-Ansible-Playbook/
-
-- name: include variables
-  include_vars: ../../vars/main.yaml
-
 - name: update and install packages
   apt:
     name: "{{ item }}"

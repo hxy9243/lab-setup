@@ -1,14 +1,31 @@
 - name: Install common tools and utilities
   hosts: k8s
+  vars:
+    # focal for 20.04
+    # jammy for 22.04
+    ubuntu_version: jammy
+    containerd_version: 1.6.13
+    runc_version: 1.1.4
   roles:
     - k8s/k8s_common
 
 - name: Install k8s leader
   hosts: k8s_leader
+  vars:
+    service_cidr: 10.202.8.0/24
+    pod_network_cidr: 10.10.0.0/16
+    untaint_leader: true
+    use_containerd: true
+    reset_current: false
+    kubeadm_leader_advertise_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    kubeadm_extra_flags:
   roles:
     - k8s/k8s_leader
 
 - name: Install k8s worker
   hosts: k8s_worker
+  vars:
+    kubeadm_leader_advertise_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    kubeadm_extra_flags:
   roles:
     - k8s/k8s_worker
