@@ -25,6 +25,7 @@
     chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
     release_namespace: nfs-provisioner
     create_namespace: true
+    wait: true
     values:
       nfs:
         server: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address']
