@@ -1,9 +1,0 @@
-- name: Install and config NFS server
-  hosts: k8s_leader
-  roles:
-    - nfs/nfs_server
-
-- name: Install and config NFS clients
-  hosts: k8s
-  roles:
-    - nfs/nfs_client
