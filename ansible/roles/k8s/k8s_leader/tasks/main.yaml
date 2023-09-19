@@ -1,7 +1,5 @@
 # References from https://github.com/kairen/kubeadm-ansible/
 # systemd: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
-- name: include variables
-  include_vars: ../../vars/main.yaml
 
 - debug:
     msg: "Deploying leader to {{ kubeadm_leader_advertise_address }}"
