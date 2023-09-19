@@ -1,3 +1,11 @@
+# install runc
+- name: install runc
+  when: use_containerd
+  get_url:
+    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.amd64"
+    dest: /usr/local/sbin/runc
+    mode: '0755'
+
 # install containerd
 - name: install containerd
   unarchive:
@@ -15,14 +23,6 @@
     enabled: true
     name: containerd
     masked: false
-
-# install runc
-- name: install runc
-  when: use_containerd
-  get_url:
-    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.amd64"
-    dest: /usr/local/sbin/runc
-    mode: '0755'
 
 # setup containerd cgroups config
 # https://github.com/etcd-io/etcd/issues/13670

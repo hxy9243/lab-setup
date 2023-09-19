@@ -1,3 +1,5 @@
+# Tasks to perform after k8s installation, e.g. setting up NFS, cuda, etc
+
 - name: Install k8s management utilities
   hosts: k8s_leader
   vars:
