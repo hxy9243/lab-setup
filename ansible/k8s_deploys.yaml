@@ -8,4 +8,4 @@
     server_dirs:
       - /data/nfs/general
   roles:
-    - k8s/nfs
+    - helm/nfs
