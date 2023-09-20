@@ -43,7 +43,7 @@
     dest: ".kube/config"
     owner: "{{ ansible_user | default(ansible_user_id) }}"
     group: "{{ ansible_user | default(ansible_user_id) }}"
-    mode: 0755
+    mode: 0600
     remote_src: true
 - name: Deploy k8s network with kube-router
   environment:
