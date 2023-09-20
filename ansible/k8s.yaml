@@ -10,6 +10,7 @@
   roles:
     - k8s/k8s_common
 
+# TODO: no support for k8s leader HA yet. There should be only one leader
 - name: Install k8s leader
   hosts: k8s_leader
   vars:

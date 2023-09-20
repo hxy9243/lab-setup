@@ -7,6 +7,9 @@ ansible_become=yes
 ansible_user=kevin
 ansible_become_password=43214321
 
+[nfs]
+lab1
+
 [docker]
 lab1
 lab2

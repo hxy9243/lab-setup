@@ -1,16 +1,11 @@
 # Tasks to perform after k8s installation, e.g. setting up NFS, cuda, etc
 
-- name: Install k8s management utilities
+- import_playbook: nfs.yaml
+
+- name: Install k8s NFS operator
   hosts: k8s_leader
   vars:
-    k8s_deploy:
-      nfs:
-        deploy: false
-        server_dirs:
-          - /data/nfs/general/
-        client_dirs:
-          - /data/remote/
-      cuda_operator:
-        deploy: true
+    server_dirs:
+      - /data/nfs/general
   roles:
-    - k8s/k8s_deploys
+    - k8s/nfs

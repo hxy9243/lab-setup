@@ -1,0 +1,5 @@
+# After kubernetes is deployed, install extra apps
+server_dirs:
+  - /data/nfs/general/
+client_dirs:
+  - /data/remote/

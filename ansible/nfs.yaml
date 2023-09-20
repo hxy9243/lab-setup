@@ -1,0 +1,14 @@
+- name: Install nfs util
+  hosts: all
+  roles:
+    - nfs/nfs_client
+
+- name: Install NFS server
+  hosts: nfs_server
+  vars:
+    nfs_server_dirs:
+      - /data/nfs/general
+  roles:
+    - nfs/nfs_server
+
+# TODO: create NFS client
