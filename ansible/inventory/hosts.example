@@ -9,6 +9,10 @@ ansible_become_password=43214321
 
 [nfs]
 lab1
+lab2
+
+[nfs_server]
+lab1
 
 [docker]
 lab1

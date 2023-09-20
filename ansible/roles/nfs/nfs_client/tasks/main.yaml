@@ -6,5 +6,22 @@
 - name: create directory
   file:
     state: directory
-    path: "{{ item }}"
+    path: "{{ item.client_path }}"
+    mode: 0777
+  loop: "{{ nfs_client_dirs }}"
+
+- name: print client mount
+  debug:
+    msg: |
+      "client {{ item.client_path }} mount on
+      {{ hostvars[groups['nfs_server'][0]]['ansible_default_ipv4']['address'] }}:{{ item.server_path }}"
+  loop: "{{ nfs_client_dirs }}"
+
+- name: Mount NFS Share
+  mount:
+    name: "{{ item.client_path }}"
+    src: "{{ hostvars[groups['nfs_server'][0]]['ansible_default_ipv4']['address'] }}:{{ item.server_path }}"
+    fstype: nfs
+    opts: rw
+    state: mounted
   loop: "{{ nfs_client_dirs }}"
