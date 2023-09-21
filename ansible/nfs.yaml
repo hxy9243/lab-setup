@@ -1,5 +1,7 @@
 - name: Install NFS server
   hosts: nfs_server
+  tags:
+    - nfs
   vars:
     nfs_server_dirs:
       - /data/nfs/general
@@ -8,6 +10,8 @@
 
 - name: Mount on NFS clients
   hosts: nfs
+  tags:
+    - nfs
   vars:
     nfs_client_dirs:
       - server_path: /data/nfs/general

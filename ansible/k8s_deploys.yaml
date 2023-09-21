@@ -4,8 +4,17 @@
 
 - name: Install k8s NFS operator
   hosts: k8s_leader
+  tags:
+    - nfs
   vars:
     server_dirs:
       - /data/nfs/general
   roles:
     - helm/nfs
+
+- name: Install k8s cuda operator
+  hosts: k8s_leader
+  tags:
+    - cuda
+  roles:
+    - helm/cuda
