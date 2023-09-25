@@ -18,3 +18,10 @@
     - cuda
   roles:
     - helm/cuda
+
+- name: Install Jupyterlab
+  hosts: k8s_leader
+  tags:
+    - jupyterhub
+  roles:
+    - helm/jupyterhub

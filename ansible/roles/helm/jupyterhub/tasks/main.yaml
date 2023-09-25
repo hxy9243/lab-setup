@@ -5,5 +5,18 @@
 - name: Add helm repo for Jupyterhub
   kubernetes.core.helm_repository:
     name: jupyterhub
-    repo_url: https://jupyterhub.github.io/helm-chart/
+    repo_url: https://hub.jupyter.org/helm-chart/
 
+- name: Install Jupyterhub
+  kubernetes.core.helm:
+    chart_ref: jupyterhub/jupyterhub
+    name: jupyterhub
+    kubeconfig: /etc/kubernetes/admin.conf
+    release_namespace: jupyterhub
+    create_namespace: true
+    wait: true
+    values:
+      singleuser:
+        storage:
+          dynamic:
+            storageClass: nfs-client
