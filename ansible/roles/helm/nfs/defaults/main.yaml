@@ -2,4 +2,4 @@
 server_dirs:
   - /data/nfs/general/
 client_dirs:
-  - /data/remote/
+  - /data/nfs/mount
